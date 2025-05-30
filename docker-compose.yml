@@ -1,0 +1,11 @@
+services:
+  vite-app:
+    build: .
+    ports:
+      - '13213:13213'  # Default Vite dev server port
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev

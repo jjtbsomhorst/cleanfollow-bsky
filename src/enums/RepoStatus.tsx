@@ -6,4 +6,5 @@ export enum RepoStatus {
   SUSPENDED = 1 << 4, // 16
   HIDDEN = 1 << 5, // 32
   YOURSELF = 1 << 6, // 64
+  INACTIVE = 1 << 7 // 128
 }
