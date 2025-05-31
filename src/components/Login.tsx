@@ -85,7 +85,8 @@ export function Login(props) {
     return res.data.did;
   };
 
-  const loginBsky = async (login: string) => {
+  const loginBsky = async (username: string) => {
+    const login = username.toLowerCase();
     if (password()) {
       let agentDID = login.startsWith("did:") ? login : await resolveHandle(login);
       let manager = new CredentialManager({ service: await getPDS(agentDID) });
