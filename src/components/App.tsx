@@ -6,10 +6,10 @@ import {
 import { createStore } from "solid-js/store";
 import FollowRecord from "../types/FollowRecord.tsx";
 
-import { Login } from "./components/Login.tsx";
-import { Fetch } from "./components/Fetch.tsx";
-import { Header } from "./components/Header.tsx";
-import { Followers } from "./components/Followers.tsx";
+import { Login } from "./Login.tsx";
+import { Fetch } from "./Fetch.tsx";
+import { Header } from "./Header.tsx";
+import { Followers } from "./Followers.tsx";
 
 import {
   configureOAuth,
