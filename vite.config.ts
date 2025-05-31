@@ -4,7 +4,7 @@ import UnoCSS from "unocss/vite";
 
 import metadata from "./public/client-metadata.json";
 
-const SERVER_HOST = "127.0.0.1";
+const SERVER_HOST = "0.0.0.0";
 const SERVER_PORT = 13213;
 
 export default defineConfig({
