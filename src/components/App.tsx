@@ -4,7 +4,7 @@ import {
   Show,
 } from "solid-js";
 import { createStore } from "solid-js/store";
-import FollowRecord from "./types/FollowRecord.tsx";
+import FollowRecord from "../types/FollowRecord.tsx";
 
 import { Login } from "./components/Login.tsx";
 import { Fetch } from "./components/Fetch.tsx";
