@@ -82,25 +82,7 @@ export function Fetch(props) {
                   : undefined;
         }
 
-        try {
-          const res = await props.rpc.get("app.bsky.feed.getAuthorFeed", {
-            params: {
-              actor: follow.subject,
-              limit: 1
-            }
-          });
-
-          if (res.data.feed.length == 1) { // if we have a feed..
-            let postDate = new Date(res.data.feed[0].post.record.createdAt);
-            if (calculateDateDifference(postDate, now) > 30 ) {
-              status = RepoStatus.INACTIVE;
-            }
-          }
-        } catch (e: any) {
-
-        }
-
-        const status_label =
+        let status_label =
           status == RepoStatus.DELETED ? "Deleted"
             : status == RepoStatus.DEACTIVATED ? "Deactivated"
               : status == RepoStatus.SUSPENDED ? "Suspended"
@@ -111,6 +93,26 @@ export function Fetch(props) {
                         : status == RepoStatus.HIDDEN ? "Hidden by moderation service"
                           : RepoStatus.BLOCKEDBY | RepoStatus.BLOCKING ? "Mutual Block"
                             : "";
+
+        try {
+          const res = await props.rpc.get("app.bsky.feed.getAuthorFeed", {
+            params: {
+              actor: follow.subject,
+              limit: 1
+            }
+          });
+
+          if (res.data.feed.length == 1) { // if we have a feed..
+            let postDate = new Date(res.data.feed[0].post.record.createdAt);
+            let daysSinceLastActivity = calculateDateDifference(postDate, now);
+            if (daysSinceLastActivity > 30 ) {
+              status = RepoStatus.INACTIVE;
+              status_label = 'Last activity ' + daysSinceLastActivity + ' days ago';
+            }
+          }
+        } catch (e: any) {
+
+        }
 
         if (status !== undefined) {
           tmpFollows.push({
