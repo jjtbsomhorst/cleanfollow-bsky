@@ -3,7 +3,7 @@ import { RepoStatus } from "../enums/RepoStatus.tsx";
 import FollowRecord from "../types/FollowRecord.tsx";
 import Follower from "../components/Follower.tsx"
 
-export function Follows(props) {
+export function Followers(props) {
   const [selectedCount, setSelectedCount] = createSignal(0);
 
   createEffect(() => {
@@ -30,6 +30,7 @@ export function Follows(props) {
     { status: RepoStatus.BLOCKEDBY, label: "Blocked By" },
     { status: RepoStatus.BLOCKING, label: "Blocking" },
     { status: RepoStatus.HIDDEN, label: "Hidden" },
+    { status: RepoStatus.INACTIVE, label: "Inactive" },
   ];
 
   return (

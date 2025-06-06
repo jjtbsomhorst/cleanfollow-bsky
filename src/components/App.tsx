@@ -9,7 +9,7 @@ import FollowRecord from "../types/FollowRecord.tsx";
 import { Login } from "./Login.tsx";
 import { Fetch } from "./Fetch.tsx";
 import { Header } from "./Header.tsx";
-import { Follows } from "./Follows.tsx";
+import { Followers } from "./Followers.tsx";
 
 import {
   configureOAuth,
@@ -63,7 +63,7 @@ const App: Component = () => {
 
         />
         <Show when={followRecords.length}>
-          <Follows
+          <Followers
             followRecords={followRecords}
             setFollowRecords={setFollowRecords}
           />

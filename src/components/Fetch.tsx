@@ -3,11 +3,13 @@ import FollowRecord from "../types/FollowRecord.tsx";
 import { RepoStatus } from "../enums/RepoStatus.tsx";
 import { AppBskyGraphFollow, Brand, ComAtprotoRepoApplyWrites } from "@atcute/client/lexicons";
 import { resolveDid } from "../utils/ResolveDid.tsx";
+import calculateDateDifference from "../utils/DateUtil.tsx";
 
 export function Fetch(props) {
   const [progress, setProgress] = createSignal(0);
   const [followCount, setFollowCount] = createSignal(0);
   const [notice, setNotice] = createSignal("");
+  const now = new Date();
 
   const fetchHiddenAccounts = async () => {
     const fetchFollows = async () => {
@@ -44,7 +46,7 @@ export function Fetch(props) {
 
     const timer = (ms: number) => new Promise((res) => setTimeout(res, ms));
     for (let i = 0; i < follows.length; i = i + 10) {
-      if (follows.length > 1000) await timer(1000);
+      if (follows.length > 200) await timer(1000);
       follows.slice(i, i + 10).forEach(async (record) => {
         let status: RepoStatus | undefined = undefined;
         const follow = record.value as AppBskyGraphFollow.Record;
@@ -80,16 +82,37 @@ export function Fetch(props) {
                   : undefined;
         }
 
-        const status_label =
+        let status_label =
           status == RepoStatus.DELETED ? "Deleted"
             : status == RepoStatus.DEACTIVATED ? "Deactivated"
               : status == RepoStatus.SUSPENDED ? "Suspended"
                 : status == RepoStatus.YOURSELF ? "Literally Yourself"
                   : status == RepoStatus.BLOCKING ? "Blocking"
                     : status == RepoStatus.BLOCKEDBY ? "Blocked by"
-                      : status == RepoStatus.HIDDEN ? "Hidden by moderation service"
-                        : RepoStatus.BLOCKEDBY | RepoStatus.BLOCKING ? "Mutual Block"
-                          : "";
+                      : status == RepoStatus.INACTIVE ? "Inactive"
+                        : status == RepoStatus.HIDDEN ? "Hidden by moderation service"
+                          : RepoStatus.BLOCKEDBY | RepoStatus.BLOCKING ? "Mutual Block"
+                            : "";
+
+        try {
+          const res = await props.rpc.get("app.bsky.feed.getAuthorFeed", {
+            params: {
+              actor: follow.subject,
+              limit: 1
+            }
+          });
+
+          if (res.data.feed.length == 1) { // if we have a feed..
+            let postDate = new Date(res.data.feed[0].post.record.createdAt);
+            let daysSinceLastActivity = calculateDateDifference(postDate, now);
+            if (daysSinceLastActivity > 30 ) {
+              status = RepoStatus.INACTIVE;
+              status_label = 'Last activity ' + daysSinceLastActivity + ' days ago';
+            }
+          }
+        } catch (e: any) {
+
+        }
 
         if (status !== undefined) {
           tmpFollows.push({
