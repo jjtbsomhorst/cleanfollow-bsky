@@ -23,6 +23,11 @@ export function Followers(props) {
     props.setFollowRecords(range, field, value);
   }
 
+  function getRecordCount(status: RepoStatus) {
+    return props.followRecords.filter((record) => record.status === status).length;
+  }
+
+
   const options: { status: RepoStatus; label: string }[] = [
     { status: RepoStatus.DELETED, label: "Deleted" },
     { status: RepoStatus.DEACTIVATED, label: "Deactivated" },
@@ -60,7 +65,7 @@ export function Followers(props) {
                     }
                   />
                   <span class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rtl:peer-checked:after:-translate-x-full dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></span>
-                  <span class="ms-3 select-none">{option.label}</span>
+                  <span class="ms-3 select-none">{option.label} ({getRecordCount(option.status)})</span>
                 </label>
               </div>
               <div class="flex items-center">

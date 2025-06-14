@@ -51,13 +51,14 @@ export function Fetch(props) {
         let status: RepoStatus | undefined = undefined;
         const follow = record.value as AppBskyGraphFollow.Record;
         let handle: string;
-
+        let displayName: string;
         try {
           const res = await props.rpc.get("app.bsky.actor.getProfile", {
             params: { actor: follow.subject },
           });
 
           handle = res.data.handle;
+          displayName = res.data.displayName;
 
           const viewer = res.data.viewer!;
           if (res.data.labels?.some((label) => label.val === "!hide")) {
@@ -117,6 +118,7 @@ export function Fetch(props) {
         if (status !== undefined) {
           tmpFollows.push({
             did: follow.subject,
+            displayName: displayName,
             handle: handle,
             uri: record.uri,
             status: status,

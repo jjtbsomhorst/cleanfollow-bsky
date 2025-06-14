@@ -12,7 +12,7 @@ export default function Follower(props: FollowerProps) {
       <label for={"record" + props.index} class="flex flex-col">
         <Show when={props.record.handle.length}>
           <span class="flex items-center gap-x-1">
-            @{props.record.handle}
+            {props.record.displayName} ({props.record.handle})
             <a
               href={`https://bsky.app/profile/${props.record.did}`}
               target="_blank"
