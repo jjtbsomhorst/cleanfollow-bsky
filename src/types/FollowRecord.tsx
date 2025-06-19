@@ -9,6 +9,7 @@ type FollowRecord = {
   status_label: string;
   toDelete: boolean;
   visible: boolean;
+  url: string;
 };
 
 export default FollowRecord;

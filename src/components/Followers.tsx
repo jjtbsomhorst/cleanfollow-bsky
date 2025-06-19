@@ -2,8 +2,18 @@ import { createEffect, createSignal, For, Show } from "solid-js";
 import { RepoStatus } from "../enums/RepoStatus.tsx";
 import FollowRecord from "../types/FollowRecord.tsx";
 import Follower from "../components/Follower.tsx"
+import { FollowerStateSelection } from "./FollowerStateSelection.tsx";
 
-export function Followers(props) {
+export interface FollowersProps {
+  followRecords: FollowRecord[];
+  setFollowRecords: (
+    index: number[],
+    field: keyof FollowRecord,
+    value: boolean,
+  ) => void;
+}
+
+export function Followers(props: FollowersProps) {
   const [selectedCount, setSelectedCount] = createSignal(0);
 
   createEffect(() => {
@@ -48,49 +58,9 @@ export function Followers(props) {
         </div>
         <For each={options}>
           {(option, index) => (
-            <div
-              classList={{
-                "sm:pb-2 min-w-36 sm:mb-2 mt-3 sm:mt-0": true,
-                "sm:border-b sm:border-b-gray-300 dark:sm:border-b-gray-500":
-                  index() < options.length - 1,
-              }}
-            >
-              <div>
-                <label class="mb-2 mt-1 inline-flex cursor-pointer items-center">
-                  <input
-                    type="checkbox"
-                    class="peer sr-only"
-                    checked
-                    onChange={(e) =>
-                      editRecords(
-                        option.status,
-                        "visible",
-                        e.currentTarget.checked,
-                      )
-                    }
-                  />
-                  <span class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rtl:peer-checked:after:-translate-x-full dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></span>
-                  <span class="ms-3 select-none">{option.label} ({getRecordCount(option.status)})</span>
-                </label>
-              </div>
-              <div class="flex items-center">
-                <input
-                  type="checkbox"
-                  id={option.label}
-                  class="h-4 w-4 rounded"
-                  onChange={(e) =>
-                    editRecords(
-                      option.status,
-                      "toDelete",
-                      e.currentTarget.checked,
-                    )
-                  }
-                />
-                <label for={option.label} class="ml-2 select-none">
-                  Select All
-                </label>
-              </div>
-            </div>
+              <Show when={getRecordCount(option.status)}>
+                <FollowerStateSelection {...option} index={index()} length={options.length} editRecords={editRecords} size={getRecordCount(option.status)} label={option.label} />
+              </Show>
           )}
         </For>
       </div>
@@ -120,10 +90,7 @@ export function Followers(props) {
                     }
                   />
                 </div>
-                <Follower
-                  index={index()}
-                  record={record}
-                />
+                <Follower index={index()} record={record} />
               </div>
             </Show>
           )}

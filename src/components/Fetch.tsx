@@ -116,6 +116,7 @@ export function Fetch(props) {
             status_label: status_label,
             toDelete: false,
             visible: true,
+            url: follow.subject.startsWith("did:plc:") ? `https://web.plc.directory/did/${follow.subject}` : `https://${follow.subject.replace("did:web:", "")}/.well-known/did.json`,
           });
         }
         setProgress(progress() + 1);
