@@ -10,6 +10,4 @@ RUN npm install
 
 # Copy the rest of the app
 COPY . .
-
-# Start the Vite dev server
-CMD ["npm", "run", "dev"]
+RUN npm run build
