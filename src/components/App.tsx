@@ -1,7 +1,7 @@
 import {
   type Component,
   createSignal,
-  Show,
+  Show
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import FollowRecord from "../types/FollowRecord.tsx";
@@ -14,6 +14,7 @@ import { Followers } from "./Followers.tsx";
 import {
   configureOAuth,
 } from "@atcute/oauth-browser-client";
+import { Toaster } from "solid-toast";
 
 configureOAuth({
   metadata: {
@@ -41,6 +42,10 @@ const App: Component = () => {
 
   return (
     <div class="m-5 flex flex-col items-center text-slate-900 dark:text-slate-100">
+      <Toaster
+        position="top-right"
+        gutter={8}
+      />
       <Header
         theme={theme()}
         setTheme={setTheme}

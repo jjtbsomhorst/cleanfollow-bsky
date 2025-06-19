@@ -2,7 +2,7 @@ import { Show } from "solid-js";
 import FollowRecord from "../types/FollowRecord.tsx";
 
 interface FollowerProps {
-  record?: FollowRecord
+  record: FollowRecord
   index: number
 }
 
@@ -12,7 +12,7 @@ export default function Follower(props: FollowerProps) {
       <label for={"record" + props.index} class="flex flex-col">
         <Show when={props.record.handle.length}>
           <span class="flex items-center gap-x-1">
-            @{props.record.handle}
+            {props.record.displayName} ({props.record.handle})
             <a
               href={`https://bsky.app/profile/${props.record.did}`}
               target="_blank"
@@ -29,9 +29,7 @@ export default function Follower(props: FollowerProps) {
           {props.record.did}
           <a
             href={
-              props.record.did.startsWith("did:plc:") ?
-                `https://web.plc.directory/did/${props.record.did}`
-              : `https://${props.record.did.replace("did:web:", "")}/.well-known/did.json`
+              props.record.url
             }
             target="_blank"
             class="group/tooltip relative flex items-center"

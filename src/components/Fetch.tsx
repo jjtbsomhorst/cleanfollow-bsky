@@ -4,6 +4,7 @@ import { RepoStatus } from "../enums/RepoStatus.tsx";
 import { AppBskyGraphFollow, Brand, ComAtprotoRepoApplyWrites } from "@atcute/client/lexicons";
 import { resolveDid } from "../utils/ResolveDid.tsx";
 import calculateDateDifference from "../utils/DateUtil.tsx";
+import { getRepoStatusLabel } from "../enums/RepoStatusLabel.tsx";
 
 export function Fetch(props) {
   const [progress, setProgress] = createSignal(0);
@@ -51,13 +52,14 @@ export function Fetch(props) {
         let status: RepoStatus | undefined = undefined;
         const follow = record.value as AppBskyGraphFollow.Record;
         let handle: string;
-
+        let displayName: string;
         try {
           const res = await props.rpc.get("app.bsky.actor.getProfile", {
             params: { actor: follow.subject },
           });
 
           handle = res.data.handle;
+          displayName = res.data.displayName;
 
           const viewer = res.data.viewer!;
           if (res.data.labels?.some((label) => label.val === "!hide")) {
@@ -82,17 +84,7 @@ export function Fetch(props) {
                   : undefined;
         }
 
-        let status_label =
-          status == RepoStatus.DELETED ? "Deleted"
-            : status == RepoStatus.DEACTIVATED ? "Deactivated"
-              : status == RepoStatus.SUSPENDED ? "Suspended"
-                : status == RepoStatus.YOURSELF ? "Literally Yourself"
-                  : status == RepoStatus.BLOCKING ? "Blocking"
-                    : status == RepoStatus.BLOCKEDBY ? "Blocked by"
-                      : status == RepoStatus.INACTIVE ? "Inactive"
-                        : status == RepoStatus.HIDDEN ? "Hidden by moderation service"
-                          : RepoStatus.BLOCKEDBY | RepoStatus.BLOCKING ? "Mutual Block"
-                            : "";
+        let status_label = getRepoStatusLabel(status) ?? "";
 
         try {
           const res = await props.rpc.get("app.bsky.feed.getAuthorFeed", {
@@ -117,12 +109,14 @@ export function Fetch(props) {
         if (status !== undefined) {
           tmpFollows.push({
             did: follow.subject,
+            displayName: displayName,
             handle: handle,
             uri: record.uri,
             status: status,
             status_label: status_label,
             toDelete: false,
             visible: true,
+            url: follow.subject.startsWith("did:plc:") ? `https://web.plc.directory/did/${follow.subject}` : `https://${follow.subject.replace("did:web:", "")}/.well-known/did.json`,
           });
         }
         setProgress(progress() + 1);

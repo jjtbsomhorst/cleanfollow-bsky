@@ -10,16 +10,16 @@ import {
 import { At } from "@atcute/client/lexicons";
 import { CredentialManager, XRPC } from "@atcute/client";
 import { resolveDid } from "../utils/ResolveDid.tsx";
+import { toast } from "solid-toast";
 
 export function Login(props) {
   const [loginInput, setLoginInput] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [handle, setHandle] = createSignal("");
-  const [notice, setNotice] = createSignal("");
+  const [toastId, setToastId] = createSignal("");
 
   onMount(async () => {
-    setNotice("Loading...");
-
+    setToastId(toast.loading('Loading...'));
     const init = async (): Promise<Session | undefined> => {
       const params = new URLSearchParams(location.hash.slice(1));
 
@@ -56,7 +56,7 @@ export function Login(props) {
       setHandle(await resolveDid(agent.sub));
     }
 
-    setNotice("");
+    toast.dismiss(toastId());
   });
 
   const getPDS = async (did: string) => {
@@ -81,6 +81,8 @@ export function Login(props) {
     });
     const res = await rpc.get("com.atproto.identity.resolveHandle", {
       params: { handle: handle },
+    }).catch(() => {
+      toast.error("Error resolving handle");
     });
     return res.data.did;
   };
@@ -92,29 +94,31 @@ export function Login(props) {
       let manager = new CredentialManager({ service: await getPDS(agentDID) });
       props.setAgentDid(agentDID);
       props.setRpc(new XRPC({ handler: manager }));
-
-      await manager.login({
+      const loadingToast = toast.loading('Logging in...');
+      let sessionInfo = await manager.login({
         identifier: agentDID,
         password: password(),
-      });
-      props.setLoginState(true);
+      }).catch(() => {
+        toast.error("Error logging in. Please check your credentials and try again.");
+        return null;
+      }).finally(() => {toast.dismiss(loadingToast)})
+
+      props.setLoginState(sessionInfo !== null);
     } else {
       try {
-        setNotice(`Resolving your identity...`);
+        toast.loading(`Resolving your identity...`)
         const resolved = await resolveFromIdentity(login);
 
-        setNotice(`Contacting your data server...`);
         const authUrl = await createAuthorizationUrl({
           scope: import.meta.env.VITE_OAUTH_SCOPE,
           ...resolved,
         });
 
-        setNotice(`Redirecting...`);
         await new Promise((resolve) => setTimeout(resolve, 250));
-
+        toast.dismiss(toastId());
         location.assign(authUrl);
       } catch {
-        setNotice("Error during OAuth login");
+        toast.error("Error resolving your identity. Please try again.");
       }
     }
   };
@@ -126,7 +130,7 @@ export function Login(props) {
 
   return (
     <div class="flex flex-col items-center">
-      <Show when={!props.loginState() && !notice().includes("Loading")}>
+      <Show when={!props.loginState()}>
         <form class="flex flex-col" onsubmit={(e) => e.preventDefault()}>
           <label for="handle" class="ml-0.5">
             Handle
@@ -166,9 +170,6 @@ export function Login(props) {
             Logout
           </button>
         </div>
-      </Show>
-      <Show when={notice()}>
-        <div class="m-3">{notice()}</div>
       </Show>
     </div>
   );
