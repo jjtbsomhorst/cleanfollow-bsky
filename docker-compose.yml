@@ -2,7 +2,7 @@ services:
   vite-app:
     build: .
     ports:
-      - '4173:13213'  # Default Vite dev server port
+      - '13213:4173'  # Default Vite dev server port
     volumes:
       - .:/app
       - /app/node_modules
