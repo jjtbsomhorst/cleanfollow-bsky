@@ -41,6 +41,11 @@ export function Followers(props) {
   return (
     <div class="mt-6 flex flex-col sm:w-full sm:flex-row sm:justify-center">
       <div class="dark:bg-dark-500 sticky top-0 mb-3 mr-5 flex w-full flex-wrap justify-around border-b border-b-gray-400 bg-slate-100 pb-3 sm:top-3 sm:mb-0 sm:w-auto sm:flex-col sm:self-start sm:border-none">
+        <div class="min-w-36 pt-3 sm:pt-0">
+          <span>
+            Selected: {selectedCount()}/{props.followRecords.length}
+          </span>
+        </div>
         <For each={options}>
           {(option, index) => (
             <div
@@ -88,11 +93,6 @@ export function Followers(props) {
             </div>
           )}
         </For>
-        <div class="min-w-36 pt-3 sm:pt-0">
-          <span>
-            Selected: {selectedCount()}/{props.followRecords.length}
-          </span>
-        </div>
       </div>
       <div class="sm:min-w-96">
         <For each={props.followRecords}>

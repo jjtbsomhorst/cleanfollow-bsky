@@ -4,6 +4,7 @@ import { RepoStatus } from "../enums/RepoStatus.tsx";
 import { AppBskyGraphFollow, Brand, ComAtprotoRepoApplyWrites } from "@atcute/client/lexicons";
 import { resolveDid } from "../utils/ResolveDid.tsx";
 import calculateDateDifference from "../utils/DateUtil.tsx";
+import { getRepoStatusLabel } from "../enums/RepoStatusLabel.tsx";
 
 export function Fetch(props) {
   const [progress, setProgress] = createSignal(0);
@@ -83,17 +84,7 @@ export function Fetch(props) {
                   : undefined;
         }
 
-        let status_label =
-          status == RepoStatus.DELETED ? "Deleted"
-            : status == RepoStatus.DEACTIVATED ? "Deactivated"
-              : status == RepoStatus.SUSPENDED ? "Suspended"
-                : status == RepoStatus.YOURSELF ? "Literally Yourself"
-                  : status == RepoStatus.BLOCKING ? "Blocking"
-                    : status == RepoStatus.BLOCKEDBY ? "Blocked by"
-                      : status == RepoStatus.INACTIVE ? "Inactive"
-                        : status == RepoStatus.HIDDEN ? "Hidden by moderation service"
-                          : RepoStatus.BLOCKEDBY | RepoStatus.BLOCKING ? "Mutual Block"
-                            : "";
+        let status_label = getRepoStatusLabel(status) ?? "";
 
         try {
           const res = await props.rpc.get("app.bsky.feed.getAuthorFeed", {
